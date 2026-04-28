@@ -1,17 +1,22 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using myGame.Model;
 
 namespace myGame.View
 {
     public class GameView
     {
-        private MapView _mapView = new MapView();
-        private PlayerView _playerView = new PlayerView();
-        private EnemyView _enemyView = new EnemyView();
-        private BulletView _bulletView = new BulletView();
-        private MenuView _menuView = new MenuView();
-        private HelpView _helpView = new HelpView();
 
+        public Color GetBackgroundColor(GameModel model)
+        {
+            return model.CurrentMode switch
+            {
+                GameMode.Menu => Color.Green,
+                GameMode.Game => Color.Blue,
+                GameMode.Help => Color.Yellow,
+                _ => Color.Black
+            };
+        }
         public void Draw(SpriteBatch spriteBatch, GameModel model)
         {
             
