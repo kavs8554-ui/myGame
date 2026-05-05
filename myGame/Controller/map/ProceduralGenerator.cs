@@ -14,7 +14,7 @@ namespace myGame.Controller.Map
         private const int minNodeSize = 8;
         private const int padding = 1;
         private const int cellSize = 20;
-        private const int corridorWidth = 3; // толщина коридора в клетках
+        private const int corridorWidth = 3; 
 
         public LevelModel GenerateLevel(int screenWidth, int screenHeight)
         {
@@ -216,7 +216,6 @@ namespace myGame.Controller.Map
             int x2 = to.X;
             int y2 = to.Y;
 
-            // Горизонтальный отрезок (с толщиной corridorWidth)
             int startX = Math.Min(x1, x2);
             int endX = Math.Max(x1, x2);
             for (int y = y1 - corridorWidth / 2; y <= y1 + corridorWidth / 2; y++)
@@ -224,7 +223,6 @@ namespace myGame.Controller.Map
                     if (y >= 0 && y < grid.GetLength(0) && x >= 0 && x < grid.GetLength(1))
                         grid[y, x] = 0;
 
-            // Вертикальный отрезок (с толщиной corridorWidth)
             int startY = Math.Min(y1, y2);
             int endY = Math.Max(y1, y2);
             for (int y = startY; y <= endY; y++)
