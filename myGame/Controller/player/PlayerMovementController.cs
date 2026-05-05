@@ -7,22 +7,30 @@ namespace myGame.Controller.player
 {
     public class PlayerMovementController
     {
-        private float _speed = 300f;
+        private float _speed = 1300f;
         private float _friction = 0.95f;
+        private InputController _input = new InputController();
         public void Update(PlayerModel player, GameTime gameTime)
         {
+            if (!player.IsAlive) return;
+
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Vector2 input = Vector2.Zero;
-            var keyboard = Keyboard.GetState();
-            if (keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Up)) input.Y -= 1;
-            if (keyboard.IsKeyDown(Keys.S) || keyboard.IsKeyDown(Keys.Down)) input.Y += 1;
-            if (keyboard.IsKeyDown(Keys.A) || keyboard.IsKeyDown(Keys.Left)) input.X -= 1;
-            if (keyboard.IsKeyDown(Keys.D) || keyboard.IsKeyDown(Keys.Right)) input.X += 1;
-            if (input != Vector2.Zero) input.Normalize();
+
+            Vector2 input = _input.GetMovementDirection(player);
 
             player.Velocity += input * _speed * dt;
             player.Velocity *= _friction;
             player.Position += player.Velocity * dt;
+
+            if (player.ControlsSwapped)
+            {
+                player.SwapTimer -= dt;
+                if (player.SwapTimer <= 0)
+                {
+                    player.ControlsSwapped = false;
+                    player.SwapTimer = 0;
+                }
+            }
         }
     }
 }

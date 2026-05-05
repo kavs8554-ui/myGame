@@ -29,6 +29,10 @@ namespace myGame
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            _graphics.PreferredBackBufferWidth = 800;  
+            _graphics.PreferredBackBufferHeight = 600; 
+            _graphics.ApplyChanges();
         }
 
         protected override void Initialize()

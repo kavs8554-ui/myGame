@@ -8,5 +8,8 @@ namespace myGame.Model.player
         public float Radius { get; set; } = 16f;
         public Vector2 Velocity { get; set; }
         public bool IsAlive { get; set; } = true;
+
+        public bool ControlsSwapped { get; set; } = false;
+        public float SwapTimer { get; set; } = 0f;
     }
 }
