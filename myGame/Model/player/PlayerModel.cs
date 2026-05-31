@@ -11,5 +11,7 @@ namespace myGame.Model.player
 
         public bool ControlsSwapped { get; set; } = false;
         public float SwapTimer { get; set; } = 0f;
+        public float ShootCooldown { get; set; } = 0.5f;
+        public float ShootTimer { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace myGame.Controller.Map
         private const int minNodeSize = 8;
         private const int padding = 1;
         private const int cellSize = 20;
-        private const int corridorWidth = 3; 
+        private const int corridorWidth = 3;
 
         public LevelModel GenerateLevel(int screenWidth, int screenHeight)
         {
@@ -40,15 +40,31 @@ namespace myGame.Controller.Map
                 Bullets = new List<BulletModel>()
             };
 
+            // Walkable grid
+            level.WalkableGrid = new bool[heightCells, widthCells];
+            for (int y = 0; y < heightCells; y++)
+                for (int x = 0; x < widthCells; x++)
+                    level.WalkableGrid[y, x] = (grid[y, x] == 0);
+            level.CellSize = cellSize;
 
+            // All walkable positions
+            level.AllWalkablePositions.Clear();
+            for (int y = 0; y < heightCells; y++)
+                for (int x = 0; x < widthCells; x++)
+                    if (level.WalkableGrid[y, x])
+                    {
+                        float centerX = x * cellSize + cellSize / 2f;
+                        float centerY = y * cellSize + cellSize / 2f;
+                        level.AllWalkablePositions.Add(new Vector2(centerX, centerY));
+                    }
+
+            // Outer walls (spans)
             level.Walls.Add(new Rectangle(0, 0, screenWidth, cellSize));
-
             level.Walls.Add(new Rectangle(0, screenHeight - cellSize, screenWidth, cellSize));
-
             level.Walls.Add(new Rectangle(0, 0, cellSize, screenHeight));
-
             level.Walls.Add(new Rectangle(screenWidth - cellSize, 0, cellSize, screenHeight));
 
+            // Convert grid to wall rectangles
             for (int y = 0; y < heightCells; y++)
                 for (int x = 0; x < widthCells; x++)
                     if (grid[y, x] == 1)
@@ -90,9 +106,7 @@ namespace myGame.Controller.Map
                         VisionRange = 200f,
                         BulletSpeed = 300f
                     };
-                    shooter.PatrolPoints.Add(pos);
-                    shooter.PatrolPoints.Add(new Vector2((room.X + room.Width - 2) * cellSize, (room.Y + room.Height / 2) * cellSize));
-                    shooter.PatrolPoints.Add(new Vector2((room.X + 2) * cellSize, (room.Y + room.Height / 2) * cellSize));
+                    // No patrol points – will use random wandering
                     level.Enemies.Add(shooter);
                 }
 
@@ -107,9 +121,6 @@ namespace myGame.Controller.Map
                     IsVulnerable = false,
                     HasTriggeredSwap = false
                 };
-                trickster.PatrolPoints.Add(tricksterPos);
-                trickster.PatrolPoints.Add(new Vector2((tricksterRoom.X + tricksterRoom.Width - 2) * cellSize, tricksterRoom.Y + tricksterRoom.Height / 2));
-                trickster.PatrolPoints.Add(new Vector2((tricksterRoom.X + 2) * cellSize, tricksterRoom.Y + tricksterRoom.Height / 2));
                 level.Enemies.Add(trickster);
             }
 
@@ -250,5 +261,6 @@ namespace myGame.Controller.Map
                 X = x; Y = y; Width = w; Height = h;
             }
         }
+
     }
 }

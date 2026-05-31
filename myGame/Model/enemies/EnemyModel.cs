@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using myGame.Controller.enemies;
 
 namespace myGame.Model.enemies
 {
@@ -10,7 +11,14 @@ namespace myGame.Model.enemies
         public int Health { get; set; } = 1;
         public bool IsAlive { get; set; } = true;
         public List<Vector2> PatrolPoints { get; set; } = new List<Vector2>();
+
+        // Состояние для конечного автомата
+        public EnemyState State { get; set; } = EnemyState.Patrol;
+        public List<Vector2> Path { get; set; }          // путь для A*
+        public float PathRecalcTimer { get; set; }       // таймер пересчёта пути
+
         private int _currentTargetIndex = 0;
+
         public Vector2 GetCurrentTarget()
         {
             if (PatrolPoints.Count == 0) return Position;

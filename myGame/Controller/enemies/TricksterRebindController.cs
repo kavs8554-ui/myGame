@@ -6,29 +6,28 @@ namespace myGame.Controller.enemies
 {
     public class TricksterRebindController
     {
-        private float _swapDuration = 5f; 
+        private float _swapDuration = 5f;
 
         public void Update(GameModel model)
         {
             if (model.CurrentLevel == null || model.Player == null) return;
 
             int aliveEnemies = 0;
-            TricksterEnemyModel chaos = null;
+            TricksterEnemyModel trickster = null;
 
             foreach (var enemy in model.CurrentLevel.Enemies)
             {
                 if (enemy.IsAlive)
                 {
                     aliveEnemies++;
-                    if (enemy is TricksterEnemyModel c)
-                        chaos = c;
+                    if (enemy is TricksterEnemyModel t)
+                        trickster = t;
                 }
             }
 
-            if (chaos != null && aliveEnemies == 1)
+            if (trickster != null && aliveEnemies == 1)
             {
-                chaos.IsVulnerable = true;
-
+                trickster.IsVulnerable = true;
                 if (model.Player.ControlsSwapped)
                 {
                     model.Player.ControlsSwapped = false;
@@ -37,13 +36,12 @@ namespace myGame.Controller.enemies
             }
         }
 
-        public void OnChaosHit(TricksterEnemyModel chaos, GameModel model)
+        public void OnTricksterHit(TricksterEnemyModel trickster, GameModel model)
         {
-            if (chaos == null || chaos.HasTriggeredSwap) return;
-
+            if (trickster == null || trickster.HasTriggeredSwap) return;
             model.Player.ControlsSwapped = true;
             model.Player.SwapTimer = _swapDuration;
-            chaos.HasTriggeredSwap = true;
+            trickster.HasTriggeredSwap = true;
         }
     }
 }
