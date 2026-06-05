@@ -21,7 +21,8 @@ namespace myGame.View.enemies
         {
             if (!bullet.IsActive) return;
             Texture2D tex = GetPixelTexture(spriteBatch.GraphicsDevice);
-            Color bulletColor = bullet.IsPlayerBullet ? Color.LimeGreen : Color.Yellow;
+            Color bulletColor = bullet.IsPlayerBullet ? Color.Blue :
+                    bullet.IsTricksterBullet ? Color.Purple : Color.Yellow;
             spriteBatch.Draw(tex, new Rectangle((int)bullet.Position.X - 3, (int)bullet.Position.Y - 3, 6, 6), bulletColor);
         }
     }

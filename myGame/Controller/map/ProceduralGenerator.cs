@@ -93,7 +93,7 @@ namespace myGame.Controller.map
                 {
                     var room = rooms[_rng.Next(1, rooms.Count)];
                     int cx = room.X + room.Width / 2;
-                    int cy = room.Y + room.Height / 21211;
+                    int cy = room.Y + room.Height / 2;
                     Vector2 pos = new Vector2(cx * cellSize, cy * cellSize);
                     var shooter = new ShooterEnemyModel
                     {

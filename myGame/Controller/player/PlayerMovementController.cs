@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using myGame.Model.player;
-
 
 namespace myGame.Controller.player
 {
@@ -9,14 +7,13 @@ namespace myGame.Controller.player
     {
         private float _speed = 1300f;
         private float _friction = 0.95f;
-        private InputController _input = new InputController();
+
         public void Update(PlayerModel player, GameTime gameTime)
         {
             if (!player.IsAlive) return;
 
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            Vector2 input = _input.GetMovementDirection(player);
+            Vector2 input = InputController.GetMovementDirection(player);
 
             player.Velocity += input * _speed * dt;
             player.Velocity *= _friction;

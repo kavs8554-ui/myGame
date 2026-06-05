@@ -8,12 +8,12 @@ namespace myGame.Controller
     public class InputController
     {
         private KeyboardState _previousKeyboardState;
-        private Keys[] _normalMoveKeys = { Keys.W, Keys.Up, Keys.S, Keys.Down, Keys.A, Keys.Left, Keys.D, Keys.Right };
-        private Keys[] _swappedMoveKeys = { Keys.S, Keys.Down, Keys.W, Keys.Up, Keys.D, Keys.Right, Keys.A, Keys.Left };
+        private static Keys[] NormalMoveKeys = { Keys.W, Keys.Up, Keys.S, Keys.Down, Keys.A, Keys.Left, Keys.D, Keys.Right };
+        private static Keys[] SwappedMoveKeys = { Keys.S, Keys.Down, Keys.W, Keys.Up, Keys.D, Keys.Right, Keys.A, Keys.Left };
 
-        public Vector2 GetMovementDirection(PlayerModel player)
+        public static Vector2 GetMovementDirection(PlayerModel player)
         {
-            Keys[] keys = player.ControlsSwapped ? _swappedMoveKeys : _normalMoveKeys;
+            Keys[] keys = player.ControlsSwapped ? SwappedMoveKeys : NormalMoveKeys;
             var keyboard = Keyboard.GetState();
             Vector2 input = Vector2.Zero;
             if (keyboard.IsKeyDown(keys[0]) || keyboard.IsKeyDown(keys[1])) input.Y -= 1;
@@ -27,7 +27,6 @@ namespace myGame.Controller
         {
             var currentKeyboardState = Keyboard.GetState();
 
-            // Esc – всегда возврат в меню (кроме самого меню)
             if (currentKeyboardState.IsKeyDown(Keys.Escape) && !_previousKeyboardState.IsKeyDown(Keys.Escape)
                 && model.CurrentMode != GameMode.Menu)
             {
@@ -48,12 +47,10 @@ namespace myGame.Controller
                 }
                 else if (currentKeyboardState.IsKeyDown(Keys.D2) && !_previousKeyboardState.IsKeyDown(Keys.D2))
                 {
-                    System.Diagnostics.Debug.WriteLine("Switching to Help");
                     model.CurrentMode = GameMode.Help;
                 }
                 else if (currentKeyboardState.IsKeyDown(Keys.D3) && !_previousKeyboardState.IsKeyDown(Keys.D3))
                 {
-                    // В меню – выход из игры, в остальных – возврат в меню
                     if (model.CurrentMode == GameMode.Menu)
                         model.ExitGame = true;
                     else
