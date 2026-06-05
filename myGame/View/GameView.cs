@@ -45,9 +45,6 @@ namespace myGame.View
             int h = spriteBatch.GraphicsDevice.Viewport.Height;
             if (model.CurrentLevel == null || model.Player == null) return;
 
-            string enemyCount = $"Enemies: {model.CurrentLevel.Enemies.FindAll(e => e.IsAlive).Count}";
-            spriteBatch.DrawString(font, enemyCount, new Vector2(20, 20), Color.White);
-
             string healthText = $"HP: {model.Player.Health}/{model.Player.MaxHealth}";
             Color healthColor = model.Player.Health > 1 ? Color.White : Color.Red;
             spriteBatch.DrawString(font, healthText, new Vector2(20, 40), healthColor);
@@ -57,10 +54,6 @@ namespace myGame.View
                 string swapText = $"SWAPPED! {model.Player.SwapTimer:F1}s";
                 spriteBatch.DrawString(font, swapText, new Vector2(20, 65), Color.OrangeRed);
             }
-
-            string controls = "WASD/Arrows: Move | Click/Space: Shoot | Esc: Menu";
-            Vector2 measure = font.MeasureString(controls);
-            spriteBatch.DrawString(font, controls, new Vector2((w - measure.X) / 2, h - 25), Color.LightGray);
 
             if (model.CurrentMode == GameMode.Victory)
             {

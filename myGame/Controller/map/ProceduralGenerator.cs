@@ -88,7 +88,7 @@ namespace myGame.Controller.map
 
             if (rooms.Count > 1)
             {
-                int shooterCount = Math.Min(3, rooms.Count - 1);
+                int shooterCount = Math.Min(rooms.Count - 1, rooms.Count / 2);
                 for (int i = 0; i < shooterCount; i++)
                 {
                     var room = rooms[_rng.Next(1, rooms.Count)];

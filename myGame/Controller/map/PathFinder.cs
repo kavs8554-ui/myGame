@@ -22,7 +22,7 @@ namespace myGame.Controller.map
 
             var cameFrom = new Dictionary<Point, Point>();
             var costSoFar = new Dictionary<Point, float>();
-            var frontier = new PriorityQueue<Point>();
+            var frontier = new PriorityQueue<Point, float>();
 
             frontier.Enqueue(startCell, 0);
             costSoFar[startCell] = 0;
@@ -80,48 +80,5 @@ namespace myGame.Controller.map
 
         private static Vector2 CellToWorld(Point cell, int cellSize) =>
             new Vector2(cell.X * cellSize + cellSize / 2, cell.Y * cellSize + cellSize / 2);
-
-        private class PriorityQueue<T>
-        {
-            private List<(T item, float priority)> elements = new List<(T, float)>();
-            public int Count => elements.Count;
-            public void Enqueue(T item, float priority)
-            {
-                elements.Add((item, priority));
-                int ci = elements.Count - 1;
-                while (ci > 0)
-                {
-                    int pi = (ci - 1) / 2;
-                    if (elements[ci].priority >= elements[pi].priority) break;
-                    var tmp = elements[ci];
-                    elements[ci] = elements[pi];
-                    elements[pi] = tmp;
-                    ci = pi;
-                }
-            }
-            public T Dequeue()
-            {
-                int li = elements.Count - 1;
-                var frontItem = elements[0];
-                elements[0] = elements[li];
-                elements.RemoveAt(li);
-
-                li--;
-                int pi = 0;
-                while (true)
-                {
-                    int ci = pi * 2 + 1;
-                    if (ci > li) break;
-                    int rc = ci + 1;
-                    if (rc <= li && elements[rc].priority < elements[ci].priority) ci = rc;
-                    if (elements[pi].priority <= elements[ci].priority) break;
-                    var tmp = elements[pi];
-                    elements[pi] = elements[ci];
-                    elements[ci] = tmp;
-                    pi = ci;
-                }
-                return frontItem.item;
-            }
-        }
     }
 }
