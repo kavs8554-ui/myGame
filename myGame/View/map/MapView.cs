@@ -22,10 +22,8 @@ namespace myGame.View.map
             if (level == null) return;
             Texture2D pixel = GetPixelTexture(spriteBatch.GraphicsDevice);
 
-            // Пол – очень тёмный синий
             spriteBatch.Draw(pixel, new Rectangle(0, 0, level.Width, level.Height), new Color(15, 20, 35));
 
-            // Стены – приглушённый сине-серый
             foreach (var wall in level.Walls)
             {
                 spriteBatch.Draw(pixel, wall, new Color(50, 60, 80));

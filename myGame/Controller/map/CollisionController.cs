@@ -42,7 +42,6 @@ namespace myGame.Controller.map
             if (model.CurrentLevel == null || model.Player == null) return;
             PlayerModel player = model.Player;
 
-            // 1. Столкновения с врагами (касание)
             foreach (var enemy in model.CurrentLevel.Enemies)
             {
                 if (!enemy.IsAlive) continue;
@@ -57,7 +56,6 @@ namespace myGame.Controller.map
                         if (!trickster.IsVulnerable)
                         {
                             _tricksterRebind.OnTricksterHit(trickster, model);
-                            // Выталкивание из неуязвимого Трикстера
                             float dist = (float)Math.Sqrt(distSq);
                             if (dist > 0.001f)
                             {
@@ -73,18 +71,16 @@ namespace myGame.Controller.map
                         }
                         else
                         {
-                            // Трикстер уязвим — убиваем его, игрок не получает урона
                             enemy.IsAlive = false;
                         }
                     }
-                    else // Обычный враг (ShooterEnemy)
+                    else 
                     {
                         if (!player.IsInvincible)
                         {
                             player.Health--;
                             player.InvincibilityTimer = player.InvincibilityDuration;
 
-                            // Отбрасывание игрока от врага
                             float dist = (float)Math.Sqrt(distSq);
                             if (dist > 0.001f)
                             {
@@ -102,7 +98,6 @@ namespace myGame.Controller.map
                 }
             }
 
-            // 2. Столкновения вражеских пуль с игроком
             foreach (var bullet in model.CurrentLevel.Bullets)
             {
                 if (!bullet.IsActive || bullet.IsPlayerBullet) continue;
@@ -116,18 +111,15 @@ namespace myGame.Controller.map
 
                     if (bullet.IsTricksterBullet)
                     {
-                        // Вызываем эффект подмены управления
                         if (bullet.Owner is TricksterEnemyModel trickster)
                             _tricksterRebind.OnTricksterHit(trickster, model);
 
-                        // Небольшое отталкивание (только физическое, без урона)
                         Vector2 pushDir = new Vector2(dx, dy);
                         if (pushDir != Vector2.Zero) pushDir.Normalize();
                         player.Velocity += pushDir * 50f;   // слабый толчок
                     }
                     else
                     {
-                        // Обычная вражеская пуля – урон
                         if (!player.IsInvincible)
                         {
                             player.Health--;
@@ -146,7 +138,6 @@ namespace myGame.Controller.map
                 }
             }
 
-            // 3. Столкновения пуль игрока с врагами
             foreach (var bullet in model.CurrentLevel.Bullets)
             {
                 if (!bullet.IsActive || !bullet.IsPlayerBullet) continue;

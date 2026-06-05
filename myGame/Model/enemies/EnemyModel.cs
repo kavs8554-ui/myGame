@@ -12,10 +12,9 @@ namespace myGame.Model.enemies
         public bool IsAlive { get; set; } = true;
         public List<Vector2> PatrolPoints { get; set; } = new List<Vector2>();
 
-        // Состояние для конечного автомата
         public EnemyState State { get; set; } = EnemyState.Patrol;
-        public List<Vector2> Path { get; set; }          // путь для A*
-        public float PathRecalcTimer { get; set; }       // таймер пересчёта пути
+        public List<Vector2> Path { get; set; }          
+        public float PathRecalcTimer { get; set; }       
 
         private int _currentTargetIndex = 0;
 

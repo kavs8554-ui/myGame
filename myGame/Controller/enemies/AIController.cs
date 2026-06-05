@@ -22,14 +22,12 @@ namespace myGame.Controller.enemies
             if (model.CurrentLevel == null || model.Player == null) return;
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // 1. Обновление состояний врагов + их стрельба (добавляют пули)
             foreach (var enemy in model.CurrentLevel.Enemies)
             {
                 if (!enemy.IsAlive) continue;
                 UpdateEnemyState(enemy, model, dt);
             }
 
-            // 2. Теперь двигаем все пули, включая только что добавленные врагами
             UpdateBullets(model, dt);
         }
 
@@ -41,10 +39,8 @@ namespace myGame.Controller.enemies
                 var bullet = level.Bullets[i];
                 if (!bullet.IsActive) continue;
 
-                // Движение
                 bullet.Position += bullet.Direction * bullet.Speed * dt;
 
-                // Проверка выхода за границы уровня
                 if (bullet.Position.X < -100 || bullet.Position.X > level.Width + 100 ||
                     bullet.Position.Y < -100 || bullet.Position.Y > level.Height + 100)
                 {
@@ -52,7 +48,6 @@ namespace myGame.Controller.enemies
                     continue;
                 }
 
-                // Проверка столкновения со стенами
                 if (CheckBulletWallCollision(bullet, level))
                 {
                     bullet.IsActive = false;
@@ -62,7 +57,6 @@ namespace myGame.Controller.enemies
             level.Bullets.RemoveAll(b => !b.IsActive);
         }
 
-        // Новый метод: возвращает true, если пуля попала в любую стену
         private bool CheckBulletWallCollision(BulletModel bullet, LevelModel level)
         {
             Rectangle bulletRect = new Rectangle(
@@ -76,7 +70,6 @@ namespace myGame.Controller.enemies
             int centerX = (int)bullet.Position.X / cellSize;
             int centerY = (int)bullet.Position.Y / cellSize;
 
-            // Проверяем ячейку с пулей и 8 соседних (диапазон -1..+1)
             for (int dy = -1; dy <= 1; dy++)
             {
                 for (int dx = -1; dx <= 1; dx++)
@@ -112,7 +105,7 @@ namespace myGame.Controller.enemies
                     break;
 
                 case EnemyState.Chase:
-                    ChaseUpdate(enemy, model, dt); // теперь передаём model, а не только player и level
+                    ChaseUpdate(enemy, model, dt); 
                     if (!seesPlayer && distanceToPlayer > loseRange)
                         enemy.State = EnemyState.Patrol;
                     else if (distanceToPlayer < attackRange)
@@ -131,7 +124,6 @@ namespace myGame.Controller.enemies
 
         private void PatrolUpdate(EnemyModel enemy, LevelModel level, float dt)
         {
-            // Если путь не задан или закончился — выбираем новую случайную точку
             if (enemy.Path == null || enemy.Path.Count == 0)
             {
                 if (level.AllWalkablePositions == null || level.AllWalkablePositions.Count == 0)
@@ -140,15 +132,13 @@ namespace myGame.Controller.enemies
                 Vector2 randomTarget = level.AllWalkablePositions[_random.Next(level.AllWalkablePositions.Count)];
                 enemy.Path = PathFinder.FindPath(enemy.Position, randomTarget, level.WalkableGrid, level.CellSize);
 
-                // Если путь снова не найден (маловероятно, но возможно) — просто выходим, оставляем Path == null
                 if (enemy.Path == null || enemy.Path.Count == 0)
                 {
-                    enemy.Path = null; // явно сбрасываем, чтобы в следующем кадре выбрать другую цель
+                    enemy.Path = null; 
                     return;
                 }
             }
 
-            // Движение к первой точке пути
             Vector2 targetWp = enemy.Path[0];
             Vector2 dir = targetWp - enemy.Position;
             if (dir.Length() < 5f)
@@ -165,7 +155,6 @@ namespace myGame.Controller.enemies
             LevelModel level = model.CurrentLevel;
             PlayerModel player = model.Player;
 
-            // Пересчёт пути к игроку
             if (enemy.Path == null || enemy.PathRecalcTimer <= 0)
             {
                 RecalculatePath(enemy, player.Position, level);
@@ -176,7 +165,6 @@ namespace myGame.Controller.enemies
                 enemy.PathRecalcTimer -= dt;
             }
 
-            // Движение по пути
             if (enemy.Path != null && enemy.Path.Count > 0)
             {
                 Vector2 target = enemy.Path[0];
@@ -195,20 +183,16 @@ namespace myGame.Controller.enemies
                 enemy.Position += direction * chaseSpeed * dt;
             }
 
-            // Стрельба во время преследования (для стреляющих врагов)
             TryShoot(enemy, model, dt);
         }
 
         private void AttackUpdate(EnemyModel enemy, GameModel model, float dt)
         {
-            // Для стреляющих врагов – стрельба (ближняя дистанция)
             TryShoot(enemy, model, dt);
-            // Для обычных врагов (не стреляющих) здесь могла бы быть ближняя атака, но она обрабатывается в CollisionController
         }
 
         private void TryShoot(EnemyModel enemy, GameModel model, float dt)
         {
-            // Стреляющий враг — либо ShooterEnemy, либо TricksterEnemy
             if (enemy is ShooterEnemyModel shooter)
             {
                 if (shooter.ShootTimer <= 0)
@@ -249,7 +233,7 @@ namespace myGame.Controller.enemies
                         Speed = trickster.BulletSpeed,
                         Owner = trickster,
                         IsPlayerBullet = false,
-                        IsTricksterBullet = true   // главное отличие
+                        IsTricksterBullet = true   
                     };
                     model.CurrentLevel.Bullets.Add(bullet);
                     trickster.ShootTimer = trickster.ShootCooldown;

@@ -14,7 +14,7 @@ namespace myGame.View
         {
             return model.CurrentMode switch
             {
-                GameMode.Menu => new Color(30, 30, 30),
+                GameMode.Menu => new Color(15, 20, 35),   
                 GameMode.Game => Color.Black,
                 GameMode.Help => Color.DarkSlateGray,
                 GameMode.Victory => new Color(10, 20, 40),

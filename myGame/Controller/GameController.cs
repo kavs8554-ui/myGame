@@ -16,7 +16,7 @@ namespace myGame.Controller
         private AIController _ai;
         private TricksterRebindController _tricksterRebind;
         private ProceduralGenerator _generator;
-        private PlayerShootController _playerShoot;   // Добавлено
+        private PlayerShootController _playerShoot;  
 
         public GameController()
         {
@@ -25,14 +25,13 @@ namespace myGame.Controller
             _ai = new AIController();
             _tricksterRebind = new TricksterRebindController();
             _generator = new ProceduralGenerator();
-            _playerShoot = new PlayerShootController();   // Добавлено
+            _playerShoot = new PlayerShootController();   
         }
 
         public void Update(GameModel model, GameTime gameTime)
         {
             if (model.CurrentMode != GameMode.Game) return;
 
-            // Если уровень ещё не создан, генерируем новый
             if (model.CurrentLevel == null)
             {
                 model.CurrentLevel = _generator.GenerateLevel(model.ViewportWidth, model.ViewportHeight);
@@ -49,29 +48,21 @@ namespace myGame.Controller
 
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // 1. Движение игрока
             _movement.Update(model.Player, gameTime);
 
-            // 2. Коллизии игрока со стенами
             _collision.CollideWithWalls(model);
 
-            // 3. Стрельба игрока (добавляет пулю в список)
             _playerShoot.Update(model, gameTime);
 
-            // 4. ИИ врагов: обновление состояний (включая стрельбу врагов) и затем движение ВСЕХ пуль
             _ai.Update(model, gameTime);
 
-            // 5. Коллизии пуль с врагами и игроком, контакт с врагами
             _collision.CollideWithBulletsAndEnemies(model);
 
-            // 6. Обновление состояния Трикстера (уязвимость, сброс управления)
             _tricksterRebind.Update(model);
 
-            // 7. Обновление таймера неуязвимости игрока
             if (model.Player.InvincibilityTimer > 0)
                 model.Player.InvincibilityTimer -= dt;
 
-            // 8. Проверка смерти игрока
             if (model.Player.Health <= 0 || !model.Player.IsAlive)
             {
                 model.Player.IsAlive = false;
@@ -81,11 +72,9 @@ namespace myGame.Controller
                 return;
             }
 
-            // 9. Проверка победы: все враги мертвы
             if (model.CurrentLevel.Enemies.Count > 0 && model.CurrentLevel.Enemies.All(e => !e.IsAlive))
             {
                 model.CurrentMode = GameMode.Victory;
-                // Уровень остаётся для отрисовки, но игра останавливается
             }
         }
     }

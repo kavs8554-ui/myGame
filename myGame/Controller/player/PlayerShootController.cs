@@ -29,7 +29,6 @@ namespace myGame.Controller.Player
                 if (direction.Length() < 0.01f) direction = Vector2.UnitX;
                 else direction.Normalize();
 
-                // Проверяем прямую видимость от игрока до позиции мыши
                 if (HasLineOfSight(model.Player.Position, mouseWorldPos, model.CurrentLevel))
                 {
                     var bullet = new BulletModel
@@ -50,27 +49,20 @@ namespace myGame.Controller.Player
 
         private bool HasLineOfSight(Vector2 from, Vector2 to, LevelModel level)
         {
-            // Проверяем все стены на пересечение с отрезком [from, to]
             foreach (var wall in level.Walls)
             {
-                // Пропускаем стены, в которых находится игрок или точка мыши (чтобы не блокировать выстрел изнутри)
                 if (wall.Contains(new Point((int)from.X, (int)from.Y)) ||
                     wall.Contains(new Point((int)to.X, (int)to.Y)))
                     continue;
 
                 if (RayIntersectsAABB(from, to, wall))
-                    return false; // есть препятствие на пути
+                    return false; 
             }
-            return true; // прямая видимость свободна
+            return true; 
         }
 
-        /// <summary>
-        /// Точный тест пересечения отрезка [p1, p2] с выровненным по осям прямоугольником.
-        /// Возвращает true, если отрезок пересекает прямоугольник (включая касание).
-        /// </summary>
         private bool RayIntersectsAABB(Vector2 p1, Vector2 p2, Rectangle rect)
         {
-            // Для каждой оси вычисляем t-интервал, когда отрезок находится внутри проекции прямоугольника
             float tMin = 0.0f;
             float tMax = 1.0f;
 
@@ -78,7 +70,6 @@ namespace myGame.Controller.Player
             float dx = p2.X - p1.X;
             if (Math.Abs(dx) < 0.00001f)
             {
-                // Вертикальный луч: проверяем, лежит ли X внутри прямоугольника
                 if (p1.X < rect.Left || p1.X > rect.Right)
                     return false;
             }
@@ -96,7 +87,6 @@ namespace myGame.Controller.Player
             float dy = p2.Y - p1.Y;
             if (Math.Abs(dy) < 0.00001f)
             {
-                // Горизонтальный луч: проверяем, лежит ли Y внутри прямоугольника
                 if (p1.Y < rect.Top || p1.Y > rect.Bottom)
                     return false;
             }
@@ -110,7 +100,6 @@ namespace myGame.Controller.Player
                 if (tMin > tMax) return false;
             }
 
-            // Если общий интервал существует и пересекает [0,1] — есть пересечение
             return (tMin <= 1.0f && tMax >= 0.0f);
         }
     }

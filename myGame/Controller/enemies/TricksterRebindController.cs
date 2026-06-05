@@ -15,7 +15,6 @@ namespace myGame.Controller.enemies
             int aliveEnemies = 0;
             TricksterEnemyModel trickster = null;
 
-            // Ищем всех врагов: живых считаем, а Трикстера запоминаем в любом состоянии
             foreach (var enemy in model.CurrentLevel.Enemies)
             {
                 if (enemy.IsAlive)
@@ -24,7 +23,6 @@ namespace myGame.Controller.enemies
                     trickster = t;
             }
 
-            // Если Трикстер — последний выживший, он становится уязвимым, а управление восстанавливается
             if (trickster != null && aliveEnemies == 1)
             {
                 trickster.IsVulnerable = true;
@@ -35,7 +33,6 @@ namespace myGame.Controller.enemies
                 }
             }
 
-            // Если Трикстер мёртв, а управление всё ещё перепутано — сбрасываем немедленно
             if (trickster != null && !trickster.IsAlive && model.Player.ControlsSwapped)
             {
                 model.Player.ControlsSwapped = false;

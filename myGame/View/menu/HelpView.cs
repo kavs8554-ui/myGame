@@ -7,6 +7,7 @@ namespace myGame.View.menu
     {
         public void Draw(SpriteBatch spriteBatch, SpriteFont font, int width, int height)
         {
+            string title = "HOW TO PLAY";
             string helpText =
                 "Movement: WASD or Arrow Keys\n" +
                 "Shoot: Left Mouse Button or Space\n" +
@@ -19,7 +20,20 @@ namespace myGame.View.menu
                 "  He becomes vulnerable only when he's the last enemy.\n\n" +
                 "Clear the level to win. Press Esc to return to menu.";
 
-            spriteBatch.DrawString(font, helpText, new Vector2(100, 80), Color.White);
+            float titleScale = 1.5f;
+            Vector2 titleSize = font.MeasureString(title) * titleScale;
+            Vector2 textSize = font.MeasureString(helpText);
+            float gap = 30;
+            float totalHeight = titleSize.Y + gap + textSize.Y;
+            float startY = (height - totalHeight) / 2;
+
+            spriteBatch.DrawString(font, title,
+                new Vector2((width - titleSize.X) / 2, startY),
+                Color.Cyan, 0, Vector2.Zero, titleScale, SpriteEffects.None, 0);
+
+            float textX = (width - textSize.X) / 2;
+            float textY = startY + titleSize.Y + gap;
+            spriteBatch.DrawString(font, helpText, new Vector2(textX, textY), Color.White);
         }
     }
 }

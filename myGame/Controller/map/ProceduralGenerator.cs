@@ -269,7 +269,6 @@ namespace myGame.Controller.map
 
             foreach (var wall in level.Walls)
             {
-                // Определяем, в какие ячейки сетки попадает прямоугольник стены
                 int startX = wall.Left / cellSize;
                 int startY = wall.Top / cellSize;
                 int endX = wall.Right / cellSize;
