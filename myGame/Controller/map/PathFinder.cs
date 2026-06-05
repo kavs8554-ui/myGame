@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace myGame.Controller.Map
+namespace myGame.Controller.map
 {
     public static class PathFinder
     {

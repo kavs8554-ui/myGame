@@ -11,5 +11,6 @@ namespace myGame.Model.map
         public bool IsActive { get; set; } = true;
         public EnemyModel Owner { get; set; }
         public bool IsPlayerBullet { get; set; }
+        public bool IsTricksterBullet { get; set; }
     }
 }

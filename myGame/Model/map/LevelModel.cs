@@ -17,5 +17,7 @@ namespace myGame.Model.map
         public bool[,] WalkableGrid { get; set; }
         public int CellSize { get; set; } = 20;
         public List<Vector2> AllWalkablePositions { get; set; } = new List<Vector2>();
+        public int GridCellSize { get; set; } = 80;
+        public Dictionary<Point, List<Rectangle>> WallGrid { get; set; } = new Dictionary<Point, List<Rectangle>>();
     }
 }

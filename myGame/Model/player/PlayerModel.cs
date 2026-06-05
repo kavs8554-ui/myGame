@@ -13,5 +13,10 @@ namespace myGame.Model.player
         public float SwapTimer { get; set; } = 0f;
         public float ShootCooldown { get; set; } = 0.5f;
         public float ShootTimer { get; set; }
+        public int MaxHealth { get; set; } = 3;
+        public int Health { get; set; } = 3;
+        public float InvincibilityTimer { get; set; }
+        public float InvincibilityDuration { get; set; } = 1.5f;
+        public bool IsInvincible => InvincibilityTimer > 0;
     }
 }

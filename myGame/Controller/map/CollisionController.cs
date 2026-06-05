@@ -57,35 +57,92 @@ namespace myGame.Controller.map
                         if (!trickster.IsVulnerable)
                         {
                             _tricksterRebind.OnTricksterHit(trickster, model);
-                            return;
+                            // Выталкивание из неуязвимого Трикстера
+                            float dist = (float)Math.Sqrt(distSq);
+                            if (dist > 0.001f)
+                            {
+                                Vector2 pushDir = new Vector2(dx, dy) / dist;
+                                player.Position = enemy.Position + pushDir * radSum;
+                                player.Velocity += pushDir * 150f;
+                            }
+                            else
+                            {
+                                player.Position = enemy.Position + Vector2.UnitX * radSum;
+                                player.Velocity += Vector2.UnitX * 150f;
+                            }
                         }
                         else
                         {
+                            // Трикстер уязвим — убиваем его, игрок не получает урона
                             enemy.IsAlive = false;
-                            return;
                         }
                     }
-                    else
+                    else // Обычный враг (ShooterEnemy)
                     {
-                        player.IsAlive = false;
-                        return;
+                        if (!player.IsInvincible)
+                        {
+                            player.Health--;
+                            player.InvincibilityTimer = player.InvincibilityDuration;
+
+                            // Отбрасывание игрока от врага
+                            float dist = (float)Math.Sqrt(distSq);
+                            if (dist > 0.001f)
+                            {
+                                Vector2 pushDir = new Vector2(dx, dy) / dist;
+                                player.Position = enemy.Position + pushDir * radSum;
+                                player.Velocity += pushDir * 200f;
+                            }
+                            else
+                            {
+                                player.Position = enemy.Position + Vector2.UnitX * radSum;
+                                player.Velocity += Vector2.UnitX * 200f;
+                            }
+                        }
                     }
                 }
             }
 
-            // 2. Столкновения пуль с игроком (вражеские пули)
+            // 2. Столкновения вражеских пуль с игроком
             foreach (var bullet in model.CurrentLevel.Bullets)
             {
-                if (!bullet.IsActive || bullet.IsPlayerBullet) continue; // только вражеские
+                if (!bullet.IsActive || bullet.IsPlayerBullet) continue;
                 float dx = player.Position.X - bullet.Position.X;
                 float dy = player.Position.Y - bullet.Position.Y;
                 float distSq = dx * dx + dy * dy;
                 float radSum = player.Radius + 4f;
                 if (distSq < radSum * radSum)
                 {
-                    player.IsAlive = false;
                     bullet.IsActive = false;
-                    return;
+
+                    if (bullet.IsTricksterBullet)
+                    {
+                        // Вызываем эффект подмены управления
+                        if (bullet.Owner is TricksterEnemyModel trickster)
+                            _tricksterRebind.OnTricksterHit(trickster, model);
+
+                        // Небольшое отталкивание (только физическое, без урона)
+                        Vector2 pushDir = new Vector2(dx, dy);
+                        if (pushDir != Vector2.Zero) pushDir.Normalize();
+                        player.Velocity += pushDir * 50f;   // слабый толчок
+                    }
+                    else
+                    {
+                        // Обычная вражеская пуля – урон
+                        if (!player.IsInvincible)
+                        {
+                            player.Health--;
+                            player.InvincibilityTimer = player.InvincibilityDuration;
+
+                            Vector2 pushDir = new Vector2(dx, dy);
+                            if (pushDir != Vector2.Zero) pushDir.Normalize();
+                            player.Velocity += pushDir * 100f;
+                        }
+                        if (player.Health <= 0)
+                        {
+                            player.IsAlive = false;
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -93,6 +150,7 @@ namespace myGame.Controller.map
             foreach (var bullet in model.CurrentLevel.Bullets)
             {
                 if (!bullet.IsActive || !bullet.IsPlayerBullet) continue;
+                bool hit = false;
                 foreach (var enemy in model.CurrentLevel.Enemies)
                 {
                     if (!enemy.IsAlive) continue;
@@ -102,11 +160,33 @@ namespace myGame.Controller.map
                     float radSum = enemy.Radius + 4f;
                     if (distSq < radSum * radSum)
                     {
-                        enemy.IsAlive = false;
-                        bullet.IsActive = false;
-                        break;
+                        if (enemy is TricksterEnemyModel trickster)
+                        {
+                            if (!trickster.IsVulnerable)
+                            {
+                                _tricksterRebind.OnTricksterHit(trickster, model);
+                                bullet.IsActive = false;
+                                hit = true;
+                                break;
+                            }
+                            else
+                            {
+                                enemy.IsAlive = false;
+                                bullet.IsActive = false;
+                                hit = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            enemy.IsAlive = false;
+                            bullet.IsActive = false;
+                            hit = true;
+                            break;
+                        }
                     }
                 }
+                if (hit) continue;
             }
         }
     }

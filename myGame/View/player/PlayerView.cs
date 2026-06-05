@@ -14,7 +14,7 @@ namespace myGame.player
                 (int)(player.Position.Y - player.Radius),
                 (int)(player.Radius * 2),
                 (int)(player.Radius * 2));
-            spriteBatch.Draw(pixel, rect, Color.White);
+            spriteBatch.Draw(pixel, rect, Color.Cyan);
         }
 
         private Texture2D _pixel;

@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using myGame.Model.enemies;
-
 using myGame.Model.map;
 using System;
 using System.Collections.Generic;
 
-namespace myGame.Controller.Map
+namespace myGame.Controller.map
 {
     public class ProceduralGenerator
     {
         private Random _rng = new Random();
-        private const int minRoomSize = 5;
-        private const int minNodeSize = 8;
-        private const int padding = 1;
-        private const int cellSize = 20;
-        private const int corridorWidth = 3;
+        private const int minRoomSize = 6;    
+        private const int minNodeSize = 10;   
+        private const int padding = 2;        
+        private const int cellSize = 30;     
+        private const int corridorWidth = 4;  
 
         public LevelModel GenerateLevel(int screenWidth, int screenHeight)
         {
@@ -40,14 +39,12 @@ namespace myGame.Controller.Map
                 Bullets = new List<BulletModel>()
             };
 
-            // Walkable grid
             level.WalkableGrid = new bool[heightCells, widthCells];
             for (int y = 0; y < heightCells; y++)
                 for (int x = 0; x < widthCells; x++)
                     level.WalkableGrid[y, x] = (grid[y, x] == 0);
             level.CellSize = cellSize;
 
-            // All walkable positions
             level.AllWalkablePositions.Clear();
             for (int y = 0; y < heightCells; y++)
                 for (int x = 0; x < widthCells; x++)
@@ -58,13 +55,11 @@ namespace myGame.Controller.Map
                         level.AllWalkablePositions.Add(new Vector2(centerX, centerY));
                     }
 
-            // Outer walls (spans)
             level.Walls.Add(new Rectangle(0, 0, screenWidth, cellSize));
             level.Walls.Add(new Rectangle(0, screenHeight - cellSize, screenWidth, cellSize));
             level.Walls.Add(new Rectangle(0, 0, cellSize, screenHeight));
             level.Walls.Add(new Rectangle(screenWidth - cellSize, 0, cellSize, screenHeight));
 
-            // Convert grid to wall rectangles
             for (int y = 0; y < heightCells; y++)
                 for (int x = 0; x < widthCells; x++)
                     if (grid[y, x] == 1)
@@ -73,6 +68,8 @@ namespace myGame.Controller.Map
                         int py = y * cellSize;
                         level.Walls.Add(new Rectangle(px, py, cellSize, cellSize));
                     }
+
+            BuildWallGrid(level);
 
             List<Rectangle> rooms = new List<Rectangle>();
             CollectRooms(root, rooms);
@@ -91,22 +88,21 @@ namespace myGame.Controller.Map
 
             if (rooms.Count > 1)
             {
-                int shooterCount = Math.Min(2, rooms.Count - 1);
+                int shooterCount = Math.Min(3, rooms.Count - 1);
                 for (int i = 0; i < shooterCount; i++)
                 {
                     var room = rooms[_rng.Next(1, rooms.Count)];
                     int cx = room.X + room.Width / 2;
-                    int cy = room.Y + room.Height / 2;
+                    int cy = room.Y + room.Height / 21211;
                     Vector2 pos = new Vector2(cx * cellSize, cy * cellSize);
                     var shooter = new ShooterEnemyModel
                     {
                         Position = pos,
-                        Radius = 12f,
+                        Radius = 16f,
                         ShootCooldown = 1.2f,
                         VisionRange = 200f,
                         BulletSpeed = 300f
                     };
-                    // No patrol points – will use random wandering
                     level.Enemies.Add(shooter);
                 }
 
@@ -117,9 +113,13 @@ namespace myGame.Controller.Map
                 var trickster = new TricksterEnemyModel
                 {
                     Position = tricksterPos,
-                    Radius = 14f,
+                    Radius = 16f,
                     IsVulnerable = false,
-                    HasTriggeredSwap = false
+                    HasTriggeredSwap = false,
+                    ShootCooldown = 2.0f,
+                    ShootTimer = 1.0f,
+                    VisionRange = 250f,
+                    BulletSpeed = 180f
                 };
                 level.Enemies.Add(trickster);
             }
@@ -262,5 +262,30 @@ namespace myGame.Controller.Map
             }
         }
 
+        private void BuildWallGrid(LevelModel level)
+        {
+            level.WallGrid.Clear();
+            int cellSize = level.GridCellSize;
+
+            foreach (var wall in level.Walls)
+            {
+                // Определяем, в какие ячейки сетки попадает прямоугольник стены
+                int startX = wall.Left / cellSize;
+                int startY = wall.Top / cellSize;
+                int endX = wall.Right / cellSize;
+                int endY = wall.Bottom / cellSize;
+
+                for (int y = startY; y <= endY; y++)
+                {
+                    for (int x = startX; x <= endX; x++)
+                    {
+                        var key = new Point(x, y);
+                        if (!level.WallGrid.ContainsKey(key))
+                            level.WallGrid[key] = new List<Rectangle>();
+                        level.WallGrid[key].Add(wall);
+                    }
+                }
+            }
+        }
     }
 }

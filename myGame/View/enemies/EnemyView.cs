@@ -1,32 +1,32 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using myGame.Model.enemies;
 
 namespace myGame.View.enemies
 {
     public class EnemyView
     {
-        private Texture2D _pixel;
-        private Texture2D GetPixelTexture(GraphicsDevice gd)
-        {
-            if (_pixel == null)
-            {
-                _pixel = new Texture2D(gd, 1, 1);
-                _pixel.SetData(new[] { Color.White });
-            }
-            return _pixel;
-        }
-
-        public void Draw(SpriteBatch spriteBatch, EnemyModel enemy)
+        public void Draw(SpriteBatch spriteBatch, EnemyModel enemy, Texture2D normalTexture, Texture2D tricksterTexture)
         {
             if (!enemy.IsAlive) return;
-            Texture2D tex = GetPixelTexture(spriteBatch.GraphicsDevice);
-            Rectangle rect = new Rectangle(
-                (int)(enemy.Position.X - enemy.Radius),
-                (int)(enemy.Position.Y - enemy.Radius),
-                (int)(enemy.Radius * 2),
-                (int)(enemy.Radius * 2));
-            spriteBatch.Draw(tex, rect, Color.Red);
+
+            Texture2D texture = (enemy is TricksterEnemyModel) ? tricksterTexture : normalTexture;
+            if (texture == null) return;
+
+            float scale = (enemy.Radius * 2f) / texture.Width;
+            Vector2 origin = new Vector2(texture.Width / 2f, texture.Height / 2f);
+
+            spriteBatch.Draw(
+                texture,
+                enemy.Position,
+                null,
+                Color.White,
+                0f,
+                origin,
+                scale,
+                SpriteEffects.None,
+                0f
+            );
         }
     }
 }

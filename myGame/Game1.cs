@@ -23,6 +23,9 @@ namespace myGame
         private PlayerView _playerView;
         private EnemyView _enemyView;
         private BulletView _bulletView;
+        private SpriteFont _font;
+        private Texture2D _enemyTexture;
+        private Texture2D _tricksterTexture;
 
         public Game1()
         {
@@ -30,9 +33,10 @@ namespace myGame
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _graphics.PreferredBackBufferWidth = 800;  
-            _graphics.PreferredBackBufferHeight = 600; 
+            _graphics.PreferredBackBufferWidth = 1920;
+            _graphics.PreferredBackBufferHeight = 1080;
             _graphics.ApplyChanges();
+            Window.Title = "Trickster's Labyrinth";
         }
 
         protected override void Initialize()
@@ -52,12 +56,20 @@ namespace myGame
             _mapView = new MapView();
             _playerView = new PlayerView();
             _enemyView = new EnemyView();
+            _enemyTexture = Content.Load<Texture2D>("Sprites/enemy");
+            _tricksterTexture = Content.Load<Texture2D>("Sprites/trickster");
             _bulletView = new BulletView();
+            _font = Content.Load<SpriteFont>("Arial");
+            _model.ViewportWidth = _graphics.PreferredBackBufferWidth;
+            _model.ViewportHeight = _graphics.PreferredBackBufferHeight;
         }
 
         protected override void Update(GameTime gameTime)
         {
             _inputController.Update(_model);
+            if (_model.ExitGame)
+                Exit();
+
             _gameController.Update(_model, gameTime);
             base.Update(gameTime);
         }
@@ -67,15 +79,25 @@ namespace myGame
             Color bgColor = _view.GetBackgroundColor(_model);
             GraphicsDevice.Clear(bgColor);
 
-            if (_model.CurrentMode == GameMode.Game && _model.CurrentLevel != null)
+            bool drawLevel = (_model.CurrentMode == GameMode.Game || _model.CurrentMode == GameMode.Victory)
+                             && _model.CurrentLevel != null;
+
+            if (drawLevel)
             {
                 _spriteBatch.Begin();
                 _mapView.Draw(_spriteBatch, _model.CurrentLevel);
                 foreach (var enemy in _model.CurrentLevel.Enemies)
-                    _enemyView.Draw(_spriteBatch, enemy);
+                    _enemyView.Draw(_spriteBatch, enemy, _enemyTexture, _tricksterTexture);
                 foreach (var bullet in _model.CurrentLevel.Bullets)
                     _bulletView.Draw(_spriteBatch, bullet);
                 _playerView.Draw(_spriteBatch, _model.Player);
+                _view.DrawHUD(_spriteBatch, _font, _model);
+                _spriteBatch.End();
+            }
+            else
+            {
+                _spriteBatch.Begin();
+                _view.Draw(_spriteBatch, _font, _model);
                 _spriteBatch.End();
             }
 
