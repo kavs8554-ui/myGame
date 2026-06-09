@@ -9,6 +9,8 @@ namespace myGame.View
     {
         private MenuView _menuView = new MenuView();
         private HelpView _helpView = new HelpView();
+        private VictoryView _victoryView = new VictoryView();
+        private GameOverView _gameOverView = new GameOverView();
 
         public Color GetBackgroundColor(GameModel model)
         {
@@ -16,8 +18,9 @@ namespace myGame.View
             {
                 GameMode.Menu => new Color(15, 20, 35),   
                 GameMode.Game => Color.Black,
-                GameMode.Help => Color.DarkSlateGray,
-                GameMode.Victory => new Color(10, 20, 40),
+                GameMode.Help => new Color(15, 20, 35),
+                GameMode.Victory => new Color(15, 20, 35),
+                GameMode.GameOver => new Color(15, 20, 35),
                 _ => Color.Black
             };
         }
@@ -32,8 +35,17 @@ namespace myGame.View
                 case GameMode.Menu:
                     _menuView.Draw(spriteBatch, font, w, h);
                     break;
+
                 case GameMode.Help:
                     _helpView.Draw(spriteBatch, font, w, h);
+                    break;
+
+                case GameMode.Victory:
+                    _victoryView.Draw(spriteBatch, font, w, h);
+                    break;
+
+                case GameMode.GameOver:
+                    _gameOverView.Draw(spriteBatch, font, w, h);
                     break;
             }
         }
@@ -53,20 +65,6 @@ namespace myGame.View
             {
                 string swapText = $"SWAPPED! {model.Player.SwapTimer:F1}s";
                 spriteBatch.DrawString(font, swapText, new Vector2(20, 65), Color.OrangeRed);
-            }
-
-            if (model.CurrentMode == GameMode.Victory)
-            {
-                string victoryText = "VICTORY!";
-                Vector2 victorySize = font.MeasureString(victoryText);
-                spriteBatch.DrawString(font, victoryText,
-                    new Vector2((w - victorySize.X) / 2, 200),
-                    Color.Gold, 0, Vector2.Zero, 2.0f, SpriteEffects.None, 0);
-
-                string prompt = "Press 1 for next level, Esc for menu";
-                Vector2 promptSize = font.MeasureString(prompt);
-                spriteBatch.DrawString(font, prompt,
-                    new Vector2((w - promptSize.X) / 2, 300), Color.White);
             }
         }
     }

@@ -83,11 +83,26 @@ namespace myGame
             if (drawLevel)
             {
                 _spriteBatch.Begin();
-                _mapView.Draw(_spriteBatch, _model.CurrentLevel);
+                _mapView.Draw(
+                    _spriteBatch,
+                    _model.CurrentLevel,
+                    _model.Player.Position
+                );
                 foreach (var enemy in _model.CurrentLevel.Enemies)
-                    _enemyView.Draw(_spriteBatch, enemy, _enemyTexture, _tricksterTexture);
+                {
+                    if (!IsVisible(enemy.Position))
+                        continue;
+
+                    _enemyView.Draw(
+                        _spriteBatch, enemy, _enemyTexture, _tricksterTexture);
+                }
                 foreach (var bullet in _model.CurrentLevel.Bullets)
+                {
+                    if (!IsVisible(bullet.Position))
+                        continue;
+
                     _bulletView.Draw(_spriteBatch, bullet);
+                }
                 _playerView.Draw(_spriteBatch, _model.Player);
                 _view.DrawHUD(_spriteBatch, _font, _model);
                 _spriteBatch.End();
@@ -100,6 +115,33 @@ namespace myGame
             }
 
             base.Draw(gameTime);
+        }
+
+        private bool IsVisible(Vector2 position)
+        {
+            int visionCells = 8;
+
+            int playerCellX =
+                (int)(_model.Player.Position.X /
+                      _model.CurrentLevel.CellSize);
+
+            int playerCellY =
+                (int)(_model.Player.Position.Y /
+                      _model.CurrentLevel.CellSize);
+
+            int objectCellX =
+                (int)(position.X /
+                      _model.CurrentLevel.CellSize);
+
+            int objectCellY =
+                (int)(position.Y /
+                      _model.CurrentLevel.CellSize);
+
+            int dx = objectCellX - playerCellX;
+            int dy = objectCellY - playerCellY;
+
+            return dx * dx + dy * dy
+                   <= visionCells * visionCells;
         }
     }
 }

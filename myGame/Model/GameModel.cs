@@ -6,7 +6,7 @@ namespace myGame.Model
 {
     public enum GameMode
     {
-        Menu, Game, Help, Victory
+        Menu, Game, Help, Victory, GameOver
     }
     public class GameModel
     {

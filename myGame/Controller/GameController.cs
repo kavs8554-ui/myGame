@@ -66,7 +66,7 @@ namespace myGame.Controller
             if (model.Player.Health <= 0 || !model.Player.IsAlive)
             {
                 model.Player.IsAlive = false;
-                model.CurrentMode = GameMode.Menu;
+                model.CurrentMode = GameMode.GameOver;
                 model.CurrentLevel = null;
                 model.Player = null;
                 return;
